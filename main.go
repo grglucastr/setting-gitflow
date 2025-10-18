@@ -1,36 +1,31 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
+	"log/slog"
 	"net/http"
 	"os"
 )
 
+type application struct {
+	logger *slog.Logger
+}
+
 func main() {
 
-	server := http.NewServeMux()
+	logLevel := slog.LevelDebug
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: logLevel}))
 
-	fmt.Println("Hello World!!!")
+	app := &application{
+		logger: logger,
+	}
 
-	server.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+	server := &http.Server{
+		Addr:    ":4000",
+		Handler: app.routes(),
+	}
 
-		body := map[string]string{
-			"status": "UP",
-		}
-
-		resp, err := json.Marshal(body)
-
-		if err != nil {
-			panic(err)
-		}
-
-		w.WriteHeader(http.StatusCreated)
-		w.Write(resp)
-
-	})
-
-	err := http.ListenAndServe(":4000", server)
+	logger.Info("Server is running on port :4000")
+	err := server.ListenAndServe()
 
 	if err != nil {
 		os.Exit(1)
