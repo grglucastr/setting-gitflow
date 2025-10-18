@@ -1,58 +1,50 @@
-name: Auto Pull Request (Feature -> Develop)
+name: Auto Create Pull Request
 
-# This workflow runs whenever a commit is pushed to any branch 
-# that matches the 'feature/' naming convention.
 on:
   push:
     branches:
-      # Target all branches starting with 'feature/' (e.g., feature/login, feature/new-design)
-      - 'feature/**' 
+      - 'feature/**'
+      - 'bugfix/**'
+      - 'hotfix/**'
 
 jobs:
-  create_pull_request:
+  create-pull-request:
     runs-on: ubuntu-latest
     
     steps:
-      - name: Debug - Print Branch Name
-        run: |
-          echo "Current Branch Ref: ${{ github.ref }}"
-          echo "Current Branch Name: ${{ github.ref_name }}"
-
-      - name: Checkout Repository
+      - name: Checkout code
+        # We need to fetch all history for all branches and tags
         uses: actions/checkout@v4
         with:
-          # fetch-depth: 0 is important for creating PRs
-          fetch-depth: 0 
+          fetch-depth: 0
 
-      - name: Create or Update Pull Request to Develop
-        id: cpr
-        # This action automatically creates a PR if one doesn't exist, or updates it if it does.
-        uses: peter-evans/create-pull-request@v6
-        with:
-          # Set the destination branch to 'develop'
-          base: develop 
-          # Use the branch that triggered the push as the source
-          head: ${{ github.ref_name }} 
-          # The title for the PR
-          title: 'Feature: ${{ github.ref_name }} ready for review'
-          # Body for the PR
-          body: |
-            This Pull Request was automatically created by GitHub Actions.
-            
-            - **Branch:** `${{ github.ref_name }}`
-            - **Author:** `${{ github.actor }}`
-            
-            Please fill in the details of the feature/fix and request reviewers.
-          # Assign a unique token that has permission to create PRs
-          token: ${{ secrets.GITHUB_TOKEN }}
-          # IMPORTANT FIX: Setting this to 'true' ensures the action does not try to 
-          # create a new commit or branch, and instead immediately checks for an existing PR 
-          # between HEAD (feature/something) and BASE (develop).
-          skip-ci: true
-          
-      - name: PR Status Check
-        # Check the output of the create-pull-request action
-        if: steps.cpr.outputs.pull-request-number
+      - name: Get list of commits
+        id: get_commits
         run: |
-          echo "Pull Request #${{ steps.cpr.outputs.pull-request-number }} created/updated."
-          echo "PR URL: ${{ steps.cpr.outputs.pull-request-url }}"
+          COMMIT_LIST=$(git log origin/develop..HEAD --pretty=format:"- %s (%h)")
+          echo "commits<<EOF" >> $GITHUB_OUTPUT
+          echo "$COMMIT_LIST" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          
+      - name: Create Pull Request
+        uses: repo-sync/pull-request@v2
+        id: create_pr
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          source_branch: ${{ github.ref_name }}
+          destination_branch: develop
+          pr_title: '[Auto] ${{ github.ref_name }}'
+          pr_body: |
+            This PR was automatically created from branch `${{ github.ref_name }}`.
+            
+            ## Description
+            Please update this description with details about your changes.
+            
+            ## Commits / Changes
+            ${{ steps.get_commits.outputs.commits }}
+            
+            **Branch:** `${{ github.ref_name }}`
+            **Target:** `develop`
+            **Author:** @${{ github.actor }}
+          pr_draft: true
+          pr_allow_empty: false
