@@ -5,7 +5,9 @@ import (
 	"net/http"
 )
 
-func HealthCheck(w http.ResponseWriter, r *http.Request) {
+func (app *application) healthCheck(w http.ResponseWriter, r *http.Request) {
+
+	app.logger.Debug("GET /health")
 
 	body := map[string]string{
 		"status": "UP",

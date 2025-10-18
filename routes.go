@@ -6,9 +6,9 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-func routes() http.Handler {
+func (app *application) routes() http.Handler {
 
 	routes := httprouter.New()
-	routes.HandlerFunc(http.MethodGet, "/health", HealthCheck)
+	routes.HandlerFunc(http.MethodGet, "/health", app.healthCheck)
 	return routes
 }
