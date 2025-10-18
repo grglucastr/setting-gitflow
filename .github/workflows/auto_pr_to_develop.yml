@@ -7,8 +7,7 @@ on:
     branches:
       # Target all branches starting with 'feature/' (e.g., feature/login, feature/new-design)
       - 'feature/**' 
-    # Ensure it doesn't run on branch creation, only on commits being pushed.
-    types: [pushed]
+    # Removed 'types: [pushed]' for simplicity and reliability, as 'push' implies 'pushed'.
 
 jobs:
   create_pull_request:
@@ -17,6 +16,11 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+      - name: Debug - Print Branch Name
+        run: |
+          echo "Current Branch Ref: ${{ github.ref }}"
+          echo "Current Branch Name: ${{ github.ref_name }}"
+
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
