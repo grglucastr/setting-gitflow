@@ -1,0 +1,54 @@
+name: Auto Pull Request (Feature -> Develop)
+
+# This workflow runs whenever a commit is pushed to any branch 
+# that matches the 'feature/' naming convention.
+on:
+  push:
+    branches:
+      # Target all branches starting with 'feature/' (e.g., feature/login, feature/new-design)
+      - 'feature/**' 
+    # Ensure it doesn't run on branch creation, only on commits being pushed.
+    types: [pushed]
+
+jobs:
+  create_pull_request:
+    # We only want to run this if the branch is newly pushed and does NOT already have an open PR.
+    # The 'peter-evans/create-pull-request' action handles the check for existing PRs.
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          # Required for the create-pull-request action to correctly determine branch status
+          fetch-depth: 0 
+
+      - name: Create or Update Pull Request to Develop
+        id: cpr
+        # This action automatically creates a PR if one doesn't exist, or updates it if it does.
+        uses: peter-evans/create-pull-request@v6
+        with:
+          # Set the destination branch to 'develop'
+          base: develop 
+          # Use the branch that triggered the push
+          head: ${{ github.ref_name }} 
+          # The title for the PR
+          title: 'Feature: ${{ github.ref_name }} ready for review'
+          # Body can reference the user/repo/branch for context
+          body: |
+            This Pull Request was automatically created by GitHub Actions.
+            
+            - **Branch:** `${{ github.ref_name }}`
+            - **Author:** `${{ github.actor }}`
+            
+            Please fill in the details of the feature/fix and request reviewers.
+          # Assign a unique token that has permission to create PRs
+          token: ${{ secrets.GITHUB_TOKEN }}
+          # Set an optional reviewer, replace 'team-name' with your actual team slug or remove line
+          # team: team-name 
+          
+      - name: PR Status Check
+        # Check the output of the create-pull-request action
+        if: steps.cpr.outputs.pull-request-number
+        run: |
+          echo "Pull Request #${{ steps.cpr.outputs.pull-request-number }} created/updated."
