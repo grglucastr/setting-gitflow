@@ -6,74 +6,31 @@ on:
       - 'feature/**'
       - 'bugfix/**'
       - 'hotfix/**'
-    # Excludes the develop branch itself
-    branches-ignore:
-      - develop
-      - main
 
 jobs:
   create-pull-request:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: write
     
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Check if PR already exists
-        id: check-pr
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          BRANCH_NAME="${{ github.ref_name }}"
-          PR_EXISTS=$(gh pr list --head "$BRANCH_NAME" --base develop --json number --jq length)
-          echo "pr_exists=$PR_EXISTS" >> $GITHUB_OUTPUT
 
       - name: Create Pull Request
-        if: steps.check-pr.outputs.pr_exists == '0'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          BRANCH_NAME="${{ github.ref_name }}"
-          
-          # Extract feature name from branch (e.g., feature/checkout -> checkout)
-          FEATURE_NAME=$(echo "$BRANCH_NAME" | sed 's/.*\///')
-          
-          # Create a formatted title
-          PR_TITLE="[Auto] ${FEATURE_NAME^}"
-          
-          # Create PR body
-          PR_BODY="This PR was automatically created from branch \`$BRANCH_NAME\`.
-          
-          ## Description
-          Please update this description with details about your changes.
-          
-          ## Changes
-          - [ ] Add your changes here
-          
-          **Branch:** \`$BRANCH_NAME\`
-          **Target:** \`develop\`"
-          
-          # Create the pull request
-          gh pr create \
-            --title "$PR_TITLE" \
-            --body "$PR_BODY" \
-            --base develop \
-            --head "$BRANCH_NAME" \
-            --draft
-
-      - name: PR Created
-        if: steps.check-pr.outputs.pr_exists == '0'
-        run: |
-          echo "✅ Pull request created successfully!"
-          echo "The PR has been created as a draft. Please update the description and mark it as ready for review."
-
-      - name: PR Already Exists
-        if: steps.check-pr.outputs.pr_exists != '0'
-        run: |
-          echo "ℹ️ A pull request already exists for this branch."
-          echo "Skipping PR creation."
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref_name }}
+          base: develop
+          title: '[Auto] ${{ github.ref_name }}'
+          body: |
+            This PR was automatically created from branch `${{ github.ref_name }}`.
+            
+            ## Description
+            Please update this description with details about your changes.
+            
+            ## Changes
+            - [ ] Add your changes here
+            
+            **Branch:** `${{ github.ref_name }}`
+            **Target:** `develop`
+          draft: true
