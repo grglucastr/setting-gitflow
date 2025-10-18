@@ -16,13 +16,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v6
+        uses: repo-sync/pull-request@v2
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref_name }}
-          base: develop
-          title: '[Auto] ${{ github.ref_name }}'
-          body: |
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          source_branch: ${{ github.ref_name }}
+          destination_branch: develop
+          pr_title: '[Auto] ${{ github.ref_name }}'
+          pr_body: |
             This PR was automatically created from branch `${{ github.ref_name }}`.
             
             ## Description
@@ -33,4 +33,6 @@ jobs:
             
             **Branch:** `${{ github.ref_name }}`
             **Target:** `develop`
-          draft: true
+            **Author:** @${{ github.actor }}
+          pr_draft: true
+          pr_allow_empty: false
