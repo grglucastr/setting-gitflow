@@ -7,12 +7,9 @@ on:
     branches:
       # Target all branches starting with 'feature/' (e.g., feature/login, feature/new-design)
       - 'feature/**' 
-    # Removed 'types: [pushed]' for simplicity and reliability, as 'push' implies 'pushed'.
 
 jobs:
   create_pull_request:
-    # We only want to run this if the branch is newly pushed and does NOT already have an open PR.
-    # The 'peter-evans/create-pull-request' action handles the check for existing PRs.
     runs-on: ubuntu-latest
     
     steps:
@@ -24,7 +21,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
-          # Required for the create-pull-request action to correctly determine branch status
+          # fetch-depth: 0 is important for creating PRs
           fetch-depth: 0 
 
       - name: Create or Update Pull Request to Develop
@@ -34,11 +31,11 @@ jobs:
         with:
           # Set the destination branch to 'develop'
           base: develop 
-          # Use the branch that triggered the push
+          # Use the branch that triggered the push as the source
           head: ${{ github.ref_name }} 
           # The title for the PR
           title: 'Feature: ${{ github.ref_name }} ready for review'
-          # Body can reference the user/repo/branch for context
+          # Body for the PR
           body: |
             This Pull Request was automatically created by GitHub Actions.
             
@@ -48,11 +45,14 @@ jobs:
             Please fill in the details of the feature/fix and request reviewers.
           # Assign a unique token that has permission to create PRs
           token: ${{ secrets.GITHUB_TOKEN }}
-          # Set an optional reviewer, replace 'team-name' with your actual team slug or remove line
-          # team: team-name 
+          # IMPORTANT FIX: Setting this to 'true' ensures the action does not try to 
+          # create a new commit or branch, and instead immediately checks for an existing PR 
+          # between HEAD (feature/something) and BASE (develop).
+          skip-ci: true
           
       - name: PR Status Check
         # Check the output of the create-pull-request action
         if: steps.cpr.outputs.pull-request-number
         run: |
           echo "Pull Request #${{ steps.cpr.outputs.pull-request-number }} created/updated."
+          echo "PR URL: ${{ steps.cpr.outputs.pull-request-url }}"
