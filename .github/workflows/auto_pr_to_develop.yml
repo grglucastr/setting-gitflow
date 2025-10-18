@@ -45,10 +45,7 @@ jobs:
             Please fill in the details of the feature/fix and request reviewers.
           # Assign a unique token that has permission to create PRs
           token: ${{ secrets.GITHUB_TOKEN }}
-          # IMPORTANT FIX: Setting this to 'true' ensures the action does not try to 
-          # create a new commit or branch, and instead immediately checks for an existing PR 
-          # between HEAD (feature/something) and BASE (develop).
-          skip-ci: true
+          
           
       - name: PR Status Check
         # Check the output of the create-pull-request action
