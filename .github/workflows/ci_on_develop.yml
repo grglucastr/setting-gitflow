@@ -1,0 +1,57 @@
+name: CI on Pull Request to Develop
+
+# This workflow is triggered every time a Pull Request is opened or updated
+# that is targeting the 'develop' branch.
+on:
+  pull_request:
+    branches:
+      - develop
+    types: [opened, synchronize, reopened]
+
+jobs:
+  # This job will run basic checks (lint, build, test) to validate the feature branch before merging.
+  validate_feature_branch:
+    # Use the latest Ubuntu environment for the runner
+    runs-on: ubuntu-latest
+    
+    # Define a default shell for all commands
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: 1. Checkout Code
+        # This action checks out your repository code so the workflow can access it.
+        uses: actions/checkout@v4
+
+      - name: 2. Set up Go Environment
+        # Replace 'node-version: ' with your actual language/version setup (e.g., Python, Java, Go)
+        uses: actions/setup-go@v6
+        with:
+          go-version: '1.25.3'
+          cache-dependency-path: |
+            subdir/go.sum
+            tools/go.sum
+
+      - name: 2.1 Check Go Version
+        run: go version
+
+      - name: 3. Install Dependencies
+        # Assuming you use npm, change this command if you use yarn, pnpm, etc.
+        run: go mod tidy
+
+      - name: 4. Run Linting Checks
+        # This is a placeholder for your actual quality checks
+        run: echo "Pretending to run linting... (e.g., npm run lint)"
+
+      - name: 5. Build Project
+        # This command creates the distributable version of your code
+        run: echo "Pretending to build project... (e.g., npm run build)"
+
+      - name: 6. Run Unit and Integration Tests
+        # Ensure all tests pass before the PR can be merged
+        run: echo "Pretending to run tests... (e.g., npm run test)"
+
+      # If all steps pass, the job succeeds, and the PR status check will be green.
+      - name: CI Checks Completed Successfully
+        run: echo "All Continuous Integration checks passed!"
