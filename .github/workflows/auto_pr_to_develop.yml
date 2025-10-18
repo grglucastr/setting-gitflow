@@ -32,7 +32,7 @@ jobs:
           # Set the destination branch to 'develop'
           base: develop 
           # Use the branch that triggered the push as the source
-          head: ${{ github.ref_name }} 
+          branch: ${{ github.ref_name }} 
           # The title for the PR
           title: 'Feature: ${{ github.ref_name }} ready for review'
           # Body for the PR
