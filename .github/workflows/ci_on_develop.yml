@@ -6,7 +6,7 @@ on:
   pull_request:
     branches:
       - develop
-    types: [opened, synchronize, reopened]
+    types: [opened, synchronize, reopened, ready_for_review]
 
 jobs:
   # This job will run basic checks (lint, build, test) to validate the feature branch before merging.
