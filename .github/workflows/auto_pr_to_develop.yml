@@ -13,8 +13,13 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      # 1. No need to checkout the repository!
-      # We only need the branch reference, which is available via ${{ github.ref_name }}
+      # 1. CHECKOUT: We must checkout the code so the runner is in a Git repository 
+      # and the action's internal Git commands don't crash.
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          # fetch-depth: 0 is important for creating PRs
+          fetch-depth: 0 
       
       - name: Debug - Print Branch Name
         run: |
@@ -29,13 +34,10 @@ jobs:
           # Set the destination branch to 'develop'
           base: develop 
           
-          # Use the 'branch' input to specify the source branch for the PR.
-          # This forces the action to use the remote branch that triggered the workflow.
-          branch: ${{ github.ref_name }} 
-          
-          # IMPORTANT: We must also provide a blank commit-message when skipping checkout,
-          # otherwise it tries to use its internal default logic which causes issues.
-          commit-message: '' 
+          # FIX: This critical input tells the action to use the existing branch 
+          # (${{ github.ref_name }}) as the PR head, overriding its default commit-creation 
+          # logic and preventing the "no longer differs" error.
+          pull-request-branch-name: ${{ github.ref_name }} 
           
           # The title for the PR
           title: 'Feature: ${{ github.ref_name }} ready for review'
