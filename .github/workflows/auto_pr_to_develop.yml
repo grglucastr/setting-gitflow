@@ -13,16 +13,13 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+      # 1. No need to checkout the repository!
+      # We only need the branch reference, which is available via ${{ github.ref_name }}
+      
       - name: Debug - Print Branch Name
         run: |
           echo "Current Branch Ref: ${{ github.ref }}"
           echo "Current Branch Name: ${{ github.ref_name }}"
-
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          # fetch-depth: 0 is important for creating PRs
-          fetch-depth: 0 
 
       - name: Create or Update Pull Request to Develop
         id: cpr
@@ -31,8 +28,15 @@ jobs:
         with:
           # Set the destination branch to 'develop'
           base: develop 
-          # Use the branch that triggered the push as the source
+          
+          # Use the 'branch' input to specify the source branch for the PR.
+          # This forces the action to use the remote branch that triggered the workflow.
           branch: ${{ github.ref_name }} 
+          
+          # IMPORTANT: We must also provide a blank commit-message when skipping checkout,
+          # otherwise it tries to use its internal default logic which causes issues.
+          commit-message: '' 
+          
           # The title for the PR
           title: 'Feature: ${{ github.ref_name }} ready for review'
           # Body for the PR
@@ -45,7 +49,6 @@ jobs:
             Please fill in the details of the feature/fix and request reviewers.
           # Assign a unique token that has permission to create PRs
           token: ${{ secrets.GITHUB_TOKEN }}
-          
           
       - name: PR Status Check
         # Check the output of the create-pull-request action
