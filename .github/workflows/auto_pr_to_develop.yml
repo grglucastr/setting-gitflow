@@ -34,5 +34,5 @@ jobs:
             **Branch:** `${{ github.ref_name }}`
             **Target:** `develop`
             **Author:** @${{ github.actor }}
-          pr_draft: false
+          pr_draft: true
           pr_allow_empty: false
