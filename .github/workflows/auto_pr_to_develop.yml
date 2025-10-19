@@ -47,4 +47,5 @@ jobs:
             **Target:** `develop`
             **Author:** @${{ github.actor }}
           pr_draft: true
+          pr_update_if_exists: true
           pr_allow_empty: false
