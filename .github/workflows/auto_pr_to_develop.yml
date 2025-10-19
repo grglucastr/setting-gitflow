@@ -33,7 +33,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           source_branch: ${{ github.ref_name }}
           destination_branch: develop
-          pr_title: '[Auto] ${{ github.ref_name }}'
+          pr_title: '[Draft] PR from branch ${{ github.ref_name }} -> develop'
           pr_body: |
             This PR was automatically created from branch `${{ github.ref_name }}`.
             
