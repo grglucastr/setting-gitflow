@@ -1,4 +1,4 @@
-name: Auto Create Pull Request
+name: 1 - Create Pull Request to Develop
 
 on:
   push:
@@ -7,45 +7,15 @@ on:
       - 'bugfix/**'
       - 'hotfix/**'
 
+permissions:
+  pull_requests: write
+
 jobs:
   create-pull-request:
     runs-on: ubuntu-latest
-    
     steps:
-      - name: Checkout code
-        # We need to fetch all history for all branches and tags
+      - name: Checkout Code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Get list of commits
-        id: get_commits
         run: |
-          COMMIT_LIST=$(git log origin/develop..HEAD --pretty=format:"- %s (%h)")
-          echo "commits<<EOF" >> $GITHUB_OUTPUT
-          echo "$COMMIT_LIST" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-          
-      - name: Create Pull Request
-        uses: repo-sync/pull-request@v2
-        id: create_pr
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          source_branch: ${{ github.ref_name }}
-          destination_branch: develop
-          pr_title: '[Draft] PR from branch ${{ github.ref_name }} -> develop'
-          pr_body: |
-            This PR was automatically created from branch `${{ github.ref_name }}`.
-            
-            ## Description
-            Please update this description with details about your changes.
-            
-            ## Commits / Changes
-            ${{ steps.get_commits.outputs.commits }}
-            
-            **Branch:** `${{ github.ref_name }}`
-            **Target:** `develop`
-            **Author:** @${{ github.actor }}
-          pr_draft: true
-          pr_update_if_exists: true
-          pr_allow_empty: false
+          gh_pr_up() { gh pr create $* || gh pr edit $* }
+          gh_pr_up --title "My pull request" --body "Description"
