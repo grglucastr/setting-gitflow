@@ -17,5 +17,4 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
         run: |
-          gh_pr_up() { gh pr create $* || gh pr edit $* }
-          gh_pr_up --title "My pull request" --body "Description"
+          gh --version
