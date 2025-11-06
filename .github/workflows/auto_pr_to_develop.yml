@@ -22,7 +22,11 @@ jobs:
       - name: Print gh client version
         run: |
           gh --version
+
+      - name: Print git version
+        run: |
+          git --version
       
-      - name: Create from this branch to Develop
+      - name: Create PR to Develop
         run: |
           gh pr create --base develop --title "Automatic PR from CI to Develop" --body "Edit this body"
