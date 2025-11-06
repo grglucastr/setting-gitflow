@@ -22,5 +22,7 @@ jobs:
           gh --version
       
       - name: Create from this branch to Develop
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh pr create --base develop --title "Automatic PR from CI to Develop" --body "Edit this body"
