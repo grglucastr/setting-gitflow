@@ -20,3 +20,7 @@ jobs:
       - name: Print gh client version
         run: |
           gh --version
+      
+      - name: Print gh client version
+        run: |
+          gh create pr --title "Automatic PR from CI to Develop" --body "Edit this body"
