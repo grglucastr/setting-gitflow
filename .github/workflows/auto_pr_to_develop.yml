@@ -29,11 +29,11 @@ jobs:
 
       - name: Print current branch name
         run: |
-          git rev-parse --abbrev-ref HEAD
           BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
-          echo "Eitcha!\n"
           echo $BRANCH_NAME
       
       - name: Create PR to Develop
         run: |
+          echo "EITCHA LELELELE"
+          echo $BRANCH_NAME
           gh pr create --base develop --title "Automatic PR from CI to Develop" --body "Edit this body"
