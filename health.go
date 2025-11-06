@@ -11,6 +11,7 @@ func (app *application) healthCheck(w http.ResponseWriter, r *http.Request) {
 
 	body := map[string]string{
 		"status": "UP",
+		"version": "1.0.0",
 	}
 
 	resp, err := json.Marshal(body)
