@@ -13,6 +13,8 @@ permissions:
 jobs:
   create-pull-request:
     runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -22,7 +24,5 @@ jobs:
           gh --version
       
       - name: Create from this branch to Develop
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh pr create --base develop --title "Automatic PR from CI to Develop" --body "Edit this body"
