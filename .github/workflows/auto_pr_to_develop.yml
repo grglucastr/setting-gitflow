@@ -15,6 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      BRANCH_NAME: ${{ github.ref }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -29,6 +30,7 @@ jobs:
 
       - name: Print current branch name
         run: |
+          echo $BRANCH_NAME
           BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
           echo $BRANCH_NAME
       
