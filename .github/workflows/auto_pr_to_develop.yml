@@ -50,10 +50,9 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4     
 
-      
       - name: Create PR to Develop
-        run: |
+        env:
           BRANCH_NAME={{needs.collect-metadata.outputs.branch-name}}
           COMMITS={{needs.collect-metadata.outputs.commits-text}}
-          
+        run: |         
           gh pr create --base develop --title "PR from $BRANCH_NAME to develop" --body "$COMMITS"
