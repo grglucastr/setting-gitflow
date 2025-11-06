@@ -29,13 +29,14 @@ jobs:
           git --version
 
       - name: Print current branch name
+        id: branch
         run: |
           echo $BRANCH_NAME
-          git rev-parse --abbrev-ref HEAD >> "$BRANCH_NAME"
-          echo $BRANCH_NAME
+          BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+          echo "name=$BRANCH_NAME" >> $GITHUB_OUTPUT
       
       - name: Create PR to Develop
         run: |
           echo "EITCHA LELELELE"
-          echo $BRANCH_NAME
+          echo "${{steps.branch.outputs.name}}"
           gh pr create --base develop --title "Automatic PR from CI to Develop" --body "Edit this body"
