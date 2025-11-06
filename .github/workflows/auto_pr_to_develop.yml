@@ -15,7 +15,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      BRANCH_NAME: ${{ github.ref }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -23,10 +22,6 @@ jobs:
       - name: Print gh client version
         run: |
           gh --version
-
-      - name: Print git version
-        run: |
-          git --version
 
       - name: Print current branch name
         id: branch
@@ -37,6 +32,5 @@ jobs:
       
       - name: Create PR to Develop
         run: |
-          echo "EITCHA LELELELE"
-          echo "${{steps.branch.outputs.name}}"
-          gh pr create --base develop --title "Automatic PR from CI to Develop" --body "Edit this body"
+          BRANCH_NAME=${{steps.branch.outputs.name}}
+          gh pr create --base develop --title "PR from $BRANCH_NAME to develop" --body "Edit this body"
