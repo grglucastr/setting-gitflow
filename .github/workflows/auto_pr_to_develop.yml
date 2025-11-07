@@ -43,7 +43,7 @@ jobs:
         id: commits
         run: |
           echo "List all commits and export them"
-          COMMITS="**List all commits and export them**"
+          COMMITS="**List all commits and export them**<br>next line<br>another line"
           echo "commits_text=$COMMITS" >> $GITHUB_OUTPUT
 
   create-pull-request:
