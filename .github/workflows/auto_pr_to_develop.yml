@@ -45,7 +45,9 @@ jobs:
           echo "List all commits and export them"
           HEAD="<h3>This PR contains the following</h3>"
           FEATS="<p>**feats**</p>"
+          TESTE=$(gh search commits --repo="$GITHUB_REPOSITORY" "feat: " --json commit --jq .[].commit.message) 
           echo $(gh search commits --repo="$GITHUB_REPOSITORY" "feat: " --json commit --jq .[].commit.message)
+          echo $TESTE
           
           #BUILDS="<p>**builds**</p>"
           #BUILDS_CONTENT=$(gh search commits --repo="$GITHUB_REPOSITORY" "build: " --json commit --jq .[].commit.message)
