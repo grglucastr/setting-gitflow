@@ -45,7 +45,7 @@ jobs:
           echo "List all commits and export them"
           HEAD="<h3>This PR contains the following</h3>"
           FEATS="<p>**feats**</p>"
-          FEATS_CONTENT=$(gh search commits --repo="$GITHUB_REPOSITORY" "feat: " --json commit --jq .[].commit.message)
+          COMMITS=$(gh search commits --repo="$GITHUB_REPOSITORY" "feat: " --json commit --jq .[].commit.message)
           
           BUILDS="<p>**builds**</p>"
           BUILDS_CONTENT=$(gh search commits --repo="$GITHUB_REPOSITORY" "build: " --json commit --jq .[].commit.message)
@@ -55,7 +55,7 @@ jobs:
 
           FULL_CONTENT="$HEAD $FEATS$FEATS_CONTENT <br/> $BUILDS$BUILDS_CONTENT <br/> $FIXES$FIXES_CONTENT"
           
-          echo "commits_text=$FULL_CONTENT" >> $GITHUB_OUTPUT
+          echo "commits_text=$COMMITS" >> $GITHUB_OUTPUT
 
   create-pull-request:
     runs-on: ubuntu-latest
