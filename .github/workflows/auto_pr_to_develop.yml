@@ -67,11 +67,7 @@ jobs:
       - name: Print current branches with PRs open
         run: |
           LIST=$(gh pr list --json headRefName --jq .[].headRefName)
-          
-          declare -p $LIST 2>/dev/null | grep -q "declare -a"
-          if [ $? -eq 0 ]; then
-            echo "$LIST is an array."
-          fi
+          echo "List>> $LIST"
 
 
   create-pull-request:
