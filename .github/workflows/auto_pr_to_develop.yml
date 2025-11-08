@@ -67,7 +67,7 @@ jobs:
       - name: Print current branches with PRs open
         run: |
           LIST=$(gh pr list --json headRefName --jq .[].headRefName)
-          if [ ${#LIST[@]} -eq 0]; then
+          if [ ${#LIST[@]} -eq 0 ]; then
             echo "Lets CREATE!!"
           else
             echo "The PR exists"
