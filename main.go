@@ -24,7 +24,7 @@ func main() {
 		Handler: app.routes(),
 	}
 
-	logger.Info("Server is running on port :4000")
+	logger.Info("The server is running on port :4000")
 	err := server.ListenAndServe()
 
 	if err != nil {
