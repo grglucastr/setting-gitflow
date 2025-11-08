@@ -60,30 +60,40 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    outputs:
+      pr-exists: ${{ steps.pr-exists.outputs.pr_exists }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
       - name: Print current branches with PRs open
+        id: pr-exists
         run: |
           LIST=$(gh pr list --json headRefName --jq .[].headRefName)
           if [ ${#LIST[@]} -eq 0 ]; then
-            echo "Lets CREATE!!"
+            echo "pr_exists=false" >> $GITHUB_OUTPUT
           else
-            echo "The PR exists"
+            echo "pr_exists=true" >> $GITHUB_OUTPUT
           fi
 
 
   create-pull-request:
     runs-on: ubuntu-latest
-    needs: collect-metadata
+    needs: 
+      - collect-metadata
+      - checks-if-pr-exists
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       BRANCH_NAME: ${{needs.collect-metadata.outputs.branch-name}}
       COMMITS: ${{needs.collect-metadata.outputs.commits-text}}
+      PR_EXISTS: ${{needs.checks-if-pr-exists.outputs.pr-exists}}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4     
+
+      - name: Print result of PR exists
+        run: |
+          echo "PR Exists: $PR_EXISTS"
 
       - name: Create PR to Develop
         run: |         
