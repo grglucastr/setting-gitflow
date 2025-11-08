@@ -1,0 +1,17 @@
+name: 2 - Merge to Develop
+
+on:
+  push: 
+    branches:
+      - 'develop'
+
+permissions:
+  pull-requests: write
+
+jobs:
+  merging:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Just testing
+        run: echo "Hello there! More actions coming soon."
+              

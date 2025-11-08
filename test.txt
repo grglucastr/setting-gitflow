@@ -1,1 +1,2 @@
-simple trigger 
+simple trigger
+Another trigger
