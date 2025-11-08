@@ -73,12 +73,11 @@ jobs:
         id: pr-exists
         run: |
           LIST=$(gh pr list --head="$BRANCH_NAME" --base develop --state open)
-          echo $LIST
           if [ -z "$LIST" ]; then
-            echo "don't exist!"
+            echo "Create new PR!"        
             echo "pr_exists=false" >> $GITHUB_OUTPUT
           else
-            echo "do exist!"
+            echo "Edit an existent PR!"
             echo "pr_exists=true" >> $GITHUB_OUTPUT
           fi
 
@@ -97,10 +96,10 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4     
 
-      - name: Print result of PR exists
-        run: |
-          echo "PR Exists: $PR_EXISTS"
-
       - name: Create PR to Develop
         run: |         
-          gh pr create --base develop --title "PR from $BRANCH_NAME to develop" --body "$COMMITS"
+          if [ $PR_EXISTS ]; then
+            echo "We will edit one"
+          else
+            gh pr create --base develop --title "PR from $BRANCH_NAME to develop" --body "$COMMITS"
+          fi
