@@ -74,7 +74,7 @@ jobs:
         run: |
           LIST=$(gh pr list --head="$BRANCH_NAME" --base develop --state open)
           echo $LIST
-          if [ ${#LIST[@]} -eq 0 ]; then
+          if [ -z "$LIST" ]; then
             echo "don't exist!"
             echo "pr_exists=false" >> $GITHUB_OUTPUT
           else
