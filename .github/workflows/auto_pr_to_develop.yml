@@ -63,10 +63,15 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-        
+
       - name: Print current branches with PRs open
         run: |
-          gh pr list --json headRefName --jq .[].headRefName
+          LIST=$(gh pr list --json headRefName --jq .[].headRefName)
+          
+          declare -p $LIST 2>/dev/null | grep -q "declare -a"
+          if [ $? -eq 0 ]; then
+            echo "$LIST is an array."
+          fi
 
 
   create-pull-request:
