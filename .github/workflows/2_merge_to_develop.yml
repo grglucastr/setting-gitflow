@@ -9,7 +9,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  pushing_to_develop:
+  merging:
     runs-on: ubuntu-latest
     steps:
       - name: Just testing
