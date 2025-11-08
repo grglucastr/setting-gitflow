@@ -98,7 +98,7 @@ jobs:
 
       - name: Create PR to Develop
         run: |         
-          if [ $PR_EXISTS ]; then
+          if [ "$PR_EXISTS" == "true" ]; then
             echo "We will edit one"
           else
             gh pr create --base develop --title "PR from $BRANCH_NAME to develop" --body "$COMMITS"
