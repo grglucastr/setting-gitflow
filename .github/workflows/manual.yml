@@ -1,0 +1,12 @@
+name: Manual
+
+on:
+  workflow_dispatch:
+
+jobs:
+  apenas_um_trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Teste
+        run: echo "Etcha lelel"
+  
