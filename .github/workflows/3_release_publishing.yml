@@ -1,8 +1,13 @@
 name: 3 - Release Publishing
+
 on:
+  create:
+    branches:
+      - 'release/**'
   push:
     branches:
       - 'release/**'
+  
 jobs:
   publish_version:
     runs-on: ubuntu-latest
