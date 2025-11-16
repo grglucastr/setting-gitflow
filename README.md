@@ -31,3 +31,4 @@ git checkout -b bugfix/new-bugfix
 Above is described the main stages of the GitFlow process
 
 ## Create PR automatically to develop
+
