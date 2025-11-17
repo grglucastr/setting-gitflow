@@ -1,9 +1,9 @@
 name: 2 - Merge to Develop
 
 on:
-  push: 
+  push:
     branches:
-      - 'develop'
+      - "develop"
 
 permissions:
   pull-requests: write
@@ -16,7 +16,7 @@ jobs:
       should_release: ${{ steps.check.outputs.should_release }}
       version_bump: ${{ steps.check.outputs.version_bump }}
       new_version: ${{ steps.check.outputs.new_version }}
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -35,22 +35,22 @@ jobs:
         id: check
         run: |
           LATEST_TAG="${{ steps.get_tag.outputs.latest_tag }}"
-          
+
           # Get commits since last tag
           if [ "$LATEST_TAG" = "v0.0.0" ]; then
             COMMITS=$(git log --pretty=format:"%s" develop)
           else
             COMMITS=$(git log $LATEST_TAG..develop --pretty=format:"%s")
           fi
-          
+
           echo "Commits to analyze:"
           echo "$COMMITS"
-          
+
           # Determine version bump based on conventional commits
           BREAKING=false
           FEAT=false
           FIX=false
-          
+
           while IFS= read -r commit; do
             if echo "$commit" | grep -qE "^[a-zA-Z]+(\(.+\))?!:|BREAKING CHANGE:"; then
               BREAKING=true
@@ -60,7 +60,7 @@ jobs:
               FIX=true
             fi
           done <<< "$COMMITS"
-          
+
           # Determine version bump type
           VERSION_BUMP=""
           if [ "$BREAKING" = true ]; then
@@ -70,12 +70,12 @@ jobs:
           elif [ "$FIX" = true ]; then
             VERSION_BUMP="patch"
           fi
-          
-          
+
+
           # Calculate new version
           CURRENT_VERSION="${LATEST_TAG#v}"
           IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
-          
+
           case $VERSION_BUMP in
             major)
               MAJOR=$((MAJOR + 1))
@@ -90,47 +90,54 @@ jobs:
               PATCH=$((PATCH + 1))
               ;;
           esac
-          
+
           NEW_VERSION="$MAJOR.$MINOR.$PATCH"
-          
+
           # Determine if we should create a release
           SHOULD_RELEASE="false"
           if [ -n "$VERSION_BUMP" ]; then
             SHOULD_RELEASE="true"
           fi
-          
+
           echo "should_release=$SHOULD_RELEASE" >> $GITHUB_OUTPUT
           echo "version_bump=$VERSION_BUMP" >> $GITHUB_OUTPUT
           echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
-          
+
           echo "Should release: $SHOULD_RELEASE"
           echo "Version bump: $VERSION_BUMP"
           echo "New version: $NEW_VERSION"
-  
-  
+
   create-release-branch:
     needs: analyze-commits
     if: needs.analyze-commits.outputs.should_release == 'true'
     runs-on: ubuntu-latest
-   
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT_TOKEN }}
 
       - name: Create release branch
         run: |
           NEW_VERSION="${{ needs.analyze-commits.outputs.new_version }}"
           RELEASE_BRANCH="release/$NEW_VERSION"
-          
+
           echo "Creating release branch: $RELEASE_BRANCH"
-          
+
           # Create and push release branch from develop
           git checkout develop
           git checkout -b $RELEASE_BRANCH
           git rebase develop
           git push origin $RELEASE_BRANCH
-          
+
           echo "✅ Release branch $RELEASE_BRANCH created successfully!"
+
+      - name: Summary
+        run: |
+          echo "## Release Branch Created! 🚀" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version:** ${{ needs.analyze-commits.outputs.new_version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch:** release/${{ needs.analyze-commits.outputs.new_version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Type:** ${{ needs.analyze-commits.outputs.version_bump }}" >> $GITHUB_STEP_SUMMARY

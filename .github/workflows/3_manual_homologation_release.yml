@@ -1,8 +1,14 @@
-name: 3 - Release Publishing
+name: 3 - Manual Homologation Release
+
 on:
-  push:
-    branches:
-      - 'release/**'
+  workflow_dispatch:
+    inputs:
+      release_branch:
+        description: "Release branch (e.g., release/1.2.3) - Leave empty to list available branches"
+        required: false
+        type: string
+        default: ""
+
 jobs:
   publish_version:
     if: github.ref_type == 'branch' || github.event_name == 'push'
@@ -11,6 +17,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
+
       - name: Event info
         run: |
           echo "Event: ${{ github.event_name }}"
