@@ -1,9 +1,6 @@
-name: 3 - Release Publishing
+name: 3 - Release Homologation
 
 on:
-  create:
-    branches:
-      - 'release/**'
   push:
     branches:
       - 'release/**'
