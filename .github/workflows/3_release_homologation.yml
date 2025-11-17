@@ -8,10 +8,7 @@ on:
         required: false
         type: string
         default: ""
-#  push:
-#    branches:
-#      - "release/**"
-
+        
 jobs:
   publish_version:
     if: github.ref_type == 'branch' || github.event_name == 'push'
