@@ -23,7 +23,7 @@ jobs:
         run: |
           BRANCH_NAME="${{github.event.pull_request.head.ref}}"
           VERSION=$(echo "$BRANCH_NAME" | sed 's/release\///')
-          echo "version=$VERSION >> $GITHUB_OUTPUT"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "Extracted version: $VERSION"
 
       - name: Configure Git
