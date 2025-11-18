@@ -49,6 +49,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: checks-if-pr-exists
     env:
+      GH_TOKEN: ${{ github.token }}
       PR_EXISTS: ${{needs.checks-if-pr-exists.outputs.pr-exists}}
     steps:
       - uses: actions/checkout@v2
