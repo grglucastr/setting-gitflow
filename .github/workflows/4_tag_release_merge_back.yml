@@ -33,7 +33,7 @@ jobs:
 
       - name: Create and push tag
         run: |
-          VERSION="${{steps.extract_version.output.version}}"
+          VERSION="${{steps.extract_version.outputs.version}}"
           TAG_NAME="v$VERSION"
 
           echo "Creating tag: $TAG_NAME"
