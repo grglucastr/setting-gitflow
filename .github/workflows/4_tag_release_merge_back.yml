@@ -1,0 +1,53 @@
+name: 4 - Tag Release and Merge Back
+
+on:
+  pull_request:
+    branches:
+      - "main"
+    types: ["closed"]
+
+jobs:
+  tag-and-merge-back:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: main
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract version from branch name
+        id: extract_version
+        run: |
+          BRANCH_NAME="${{github.event.pull_request.head.ref}}"
+          VERSION=$(echo "$BRANCH_NAME" | sed 's/release\///')
+          echo "version=$VERSION >> $GITHUB_OUTPUT"
+          echo "Extracted version: $VERSION"
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Create and push tag
+        run: |
+          VERSION="${{steps.extract_version.output.version}}"
+          TAG_NAME="v$VERSION"
+
+          echo "Creating tag: $TAG_NAME"
+          git tag -a "$TAG_NAME" -m "Release $TAG_NAME"
+          git push origin "$TAG_NAME"
+
+          echo  "✅ Tag $TAG_NAME created and pushed!"
+
+      - name: Merge main back to develop
+        run: |
+          echo "Merging main back to develop..."
+          git fetch origin develop
+          git checkout develop
+          git merge --no-ff origin/main -m "chore: merge release back to develop [skip ci]"
+          git push origin develop
+
+          echo "✅ Main merged back to develop!"
