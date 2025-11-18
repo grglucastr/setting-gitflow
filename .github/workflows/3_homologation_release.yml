@@ -19,3 +19,39 @@ jobs:
           echo "Event: ${{ github.event_name }}"
           echo "Branch: ${{ github.ref_name }}"
           echo "Actor: ${{ github.actor }}"
+
+  checks-if-pr-exists:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    outputs:
+      pr-exists: ${{ steps.pr-exists.outputs.pr_exists }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Print current branches with PRs open
+        id: pr-exists
+        run: |
+          BRANCH_NAME = ${{ github.ref_name }}
+
+          LIST=$(gh pr list --head="$BRANCH_NAME" --base main --state open)
+          if [ -z "$LIST" ]; then
+            echo "Create new PR!"        
+            echo "pr_exists=false" >> $GITHUB_OUTPUT
+          else
+            echo "Edit an existent PR!"
+            echo "pr_exists=true" >> $GITHUB_OUTPUT
+          fi
+
+  create_pr_to_main:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: create_pr
+        run: |
+          echo "Will be creating PR shortly"
