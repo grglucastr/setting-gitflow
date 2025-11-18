@@ -1,13 +1,9 @@
 name: 3 - Manual Homologation Release
 
 on:
-  workflow_dispatch:
-    inputs:
-      release_branch:
-        description: "Release branch (e.g., release/1.2.3) - Leave empty to list available branches"
-        required: false
-        type: string
-        default: ""
+  push:
+    branches:
+      - "release/**"
 
 jobs:
   publish_version:
