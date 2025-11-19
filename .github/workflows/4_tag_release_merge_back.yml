@@ -41,3 +41,21 @@ jobs:
           git push origin "$TAG_NAME"
 
           echo  "✅ Tag $TAG_NAME created and pushed!"
+
+      - name: Create PR to merge main into develop
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Create a PR from main to develop
+          PR_URL=$(gh pr create \
+            --base develop \
+            --head main \
+            --title "chore: merge release back to develop [skip ci]" \
+            --body "Automated merge of main back to develop" \
+            --repo ${{ github.repository }})
+
+          # Extract PR number
+          PR_NUMBER=$(echo $PR_URL | grep -oP '\d+$')
+
+          # Enable auto-merge (requires admin or maintain permissions)
+          gh pr merge $PR_NUMBER --merge --auto --delete-branch=false"
