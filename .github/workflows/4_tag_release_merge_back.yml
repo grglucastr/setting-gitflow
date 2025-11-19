@@ -42,12 +42,20 @@ jobs:
 
           echo  "✅ Tag $TAG_NAME created and pushed!"
 
-      - name: Merge main back to develop
+      - name: Create PR to merge main into develop
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "Merging main back to develop..."
-          git fetch origin develop
-          git checkout develop
-          git merge --no-ff origin/main -m "chore: merge release back to develop [skip ci]"
-          git push origin develop
+          # Create a PR from main to develop
+          PR_URL=$(gh pr create \
+            --base develop \
+            --head main \
+            --title "chore: merge release back to develop [skip ci]" \
+            --body "Automated merge of main back to develop" \
+            --repo ${{ github.repository }})
 
-          echo "✅ Main merged back to develop!"
+          # Extract PR number
+          PR_NUMBER=$(echo $PR_URL | grep -oP '\d+$')
+
+          # Enable auto-merge (requires admin or maintain permissions)
+          gh pr merge $PR_NUMBER --merge --auto --delete-branch=false"
