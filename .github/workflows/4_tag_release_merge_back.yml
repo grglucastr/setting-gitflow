@@ -58,4 +58,4 @@ jobs:
           PR_NUMBER=$(echo $PR_URL | grep -oP '\d+$')
 
           # Enable auto-merge (requires admin or maintain permissions)
-          gh pr merge $PR_NUMBER --merge --auto --delete-branch=false"
+          gh pr merge $PR_NUMBER --merge --auto --delete-branch=false
